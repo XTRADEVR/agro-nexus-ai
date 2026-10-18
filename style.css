@@ -1,0 +1,195 @@
+:root {
+  --bg-primary: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --border-color: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --accent-green: #10b981;
+  --accent-glow: rgba(16, 185, 129, 0.15);
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #050b07;
+  --bg-surface: #0a140d;
+  --bg-card: rgba(14, 25, 18, 0.85);
+  --border-color: #1e3323;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --accent-green: #10b981;
+  --accent-glow: rgba(16, 185, 129, 0.25);
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  min-height: 100vh;
+}
+
+/* Screen Flash / Splash Screen */
+#splash-screen {
+  position: fixed;
+  inset: 0;
+  background-color: #050b07;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+}
+
+#splash-screen.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.splash-logo {
+  width: 96px;
+  height: 96px;
+  animation: pulse-glow 1.5s infinite alternate;
+}
+
+@keyframes pulse-glow {
+  0% { transform: scale(0.92); filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.4)); }
+  100% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(16, 185, 129, 0.9)); }
+}
+
+.splash-title {
+  color: #10b981;
+  margin-top: 1.5rem;
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+/* Header & Controls */
+header {
+  padding: 1rem 1.5rem;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand img {
+  width: 32px;
+  height: 32px;
+}
+
+.brand h1 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--accent-green);
+}
+
+.theme-toggle-btn {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Dashboard Grid */
+.container {
+  max-width: 1200px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(12px);
+}
+
+.card-title {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+}
+
+.metric-val {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.metric-unit {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
+}
+
+.badge-optimal { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.badge-alert { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+/* NDVI Map Canvas Simulator */
+.canvas-container {
+  grid-column: 1 / -1;
+  height: 260px;
+  background: #020402;
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#ndviCanvas {
+  width: 100%;
+  height: 100%;
+}
+
+.canvas-overlay {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #10b981;
+  font-family: monospace;
+  }
