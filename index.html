@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>AGRO - NEXUS AI | Operating System</title>
+  
+  <!-- Standard PWA Metadata -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#10b981">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/192/628/628283.png">
+  
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <!-- Screen Flash / Initial Launch Splash -->
+  <div id="splash-screen">
+    <img class="splash-logo" src="https://cdn-icons-png.flaticon.com/512/628/628283.png" alt="Agro Nexus Logo">
+    <div class="splash-title">AGRO - NEXUS AI</div>
+    <p style="color: #64748b; font-size: 0.85rem; margin-top: 0.5rem;">Precision Agriculture OS v1.0</p>
+  </div>
+
+  <!-- Header Section -->
+  <header>
+    <div class="brand">
+      <img src="https://cdn-icons-png.flaticon.com/192/628/628283.png" alt="App Logo">
+      <h1>AGRO-NEXUS AI</h1>
+    </div>
+    <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle Mode">🌙 Gelap</button>
+  </header>
+
+  <!-- Live Telemetry & Control Dashboard -->
+  <main class="container">
+    
+    <!-- NDVI Multispectral Visualizer -->
+    <div class="canvas-container">
+      <div class="canvas-overlay">SYSTEM ACTIVE | DRONE SENTINEL NDVI MAPPING: ZONE 04</div>
+      <canvas id="ndviCanvas"></canvas>
+    </div>
+
+    <!-- Soil Moisture Tile -->
+    <div class="card">
+      <div class="card-title">Soil Moisture (Kelembapan)</div>
+      <div class="metric-val" id="valMoisture">48.2 <span class="metric-unit">%</span></div>
+      <span class="status-badge badge-optimal" id="badgeMoisture">OPTIMAL STATUS</span>
+    </div>
+
+    <!-- NPK Ratio Tile -->
+    <div class="card">
+      <div class="card-title">NPK Sensor Fusion (N-P-K)</div>
+      <div class="metric-val" id="valNPK">42-18-24 <span class="metric-unit">mg/kg</span></div>
+      <span class="status-badge badge-optimal">BALANCED NITROGEN</span>
+    </div>
+
+    <!-- Environmental Temp & Humidity -->
+    <div class="card">
+      <div class="card-title">Ambient Micro-Climate</div>
+      <div class="metric-val" id="valClimate">27.4 <span class="metric-unit">°C / 78%</span></div>
+      <span class="status-badge badge-optimal">LOW EVAPOTRANSPIRATION</span>
+    </div>
+
+    <!-- Computer Vision Edge Leaf Scanner -->
+    <div class="card" style="grid-column: 1 / -1;">
+      <div class="card-title">NEXUS-VISION | Leaf Pathology Diagnostic</div>
+      <div style="display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem; flex-wrap: wrap;">
+        <input type="file" id="leafInput" accept="image/*" style="font-size: 0.85rem; color: var(--text-muted);">
+        <div id="diagnosticResult" style="font-weight: 600; font-size: 0.95rem; color: var(--accent-green);">
+          Siap memindai citra daun tanaman...
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // 1. Registrasi Service Worker PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('AgroNexus SW Active:', reg.scope))
+          .catch(err => console.error('SW Registration Failed:', err));
+      });
+    }
+
+    // 2. Screen Flash (Splash Screen) Handler
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        if (splash) splash.classList.add('fade-out');
+      }, 1000); // 1.0 detik flash screen
+    });
+
+    // 3. Theme Toggle (Terang / Gelap)
+    const themeBtn = document.getElementById('themeToggle');
+    const htmlEl = document.documentElement;
+    
+    // Periksa preferensi tersimpan
+    const savedTheme = localStorage.getItem('agro_theme') || 'dark';
+    htmlEl.setAttribute('data-theme', savedTheme);
+    themeBtn.textContent = savedTheme === 'dark' ? '🌙 Gelap' : '☀️ Terang';
+
+    themeBtn.addEventListener('click', () => {
+      const current = htmlEl.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      htmlEl.setAttribute('data-theme', next);
+      localStorage.setItem('agro_theme', next);
+      themeBtn.textContent = next === 'dark' ? '🌙 Gelap' : '☀️ Terang';
+    });
+
+    // 4. Simulasi Real-Time Telemetry Data Generator
+    setInterval(() => {
+      const moisture = (40 + Math.random() * 15).toFixed(1);
+      const temp = (26 + Math.random() * 3).toFixed(1);
+      const humidity = Math.floor(70 + Math.random() * 12);
+      
+      document.getElementById('valMoisture').innerHTML = `${moisture} <span class="metric-unit">%</span>`;
+      document.getElementById('valClimate').innerHTML = `${temp} <span class="metric-unit">°C / ${humidity}%</span>`;
+    }, 3000);
+
+    // 5. Canvas Simulasi NDVI Grid Heatmap
+    const canvas = document.getElementById('ndviCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+      drawNDVI();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function drawNDVI() {
+      const cols = 24;
+      const rows = 12;
+      const cellW = canvas.width / cols;
+      const cellH = canvas.height / rows;
+
+      for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+          const healthScore = Math.random();
+          // Gradien hijau (sehat) ke kuning-merah (stres air/hama)
+          if (healthScore > 0.4) {
+            ctx.fillStyle = `rgba(16, 185, 129, ${healthScore * 0.8})`;
+          } else {
+            ctx.fillStyle = `rgba(239, 68, 68, ${(1 - healthScore) * 0.7})`;
+          }
+          ctx.fillRect(i * cellW, j * cellH, cellW - 1, cellH - 1);
+        }
+      }
+    }
+    resizeCanvas();
+
+    // 6. Image Upload Handler
+    document.getElementById('leafInput').addEventListener('change', (e) => {
+      const res = document.getElementById('diagnosticResult');
+      if (e.target.files.length > 0) {
+        res.innerHTML = "🔍 Melakukan inferensi ONNX...";
+        setTimeout(() => {
+          res.innerHTML = "✅ <b>Hasil:</b> Daun Sehat (Healthy Index 98.7%) | Rekomendasi: Pemupukan NPK Rutin";
+        }, 1200);
+      }
+    });
+  </script>
+</body>
+</html>
